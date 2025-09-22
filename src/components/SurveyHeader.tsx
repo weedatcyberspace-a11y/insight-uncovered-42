@@ -11,32 +11,32 @@ const SurveyHeader = () => {
               <BarChart3 className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-foreground">SurveyPro</h1>
-              <p className="text-sm text-muted-foreground">Market Research Platform</p>
+              <h1 className="text-xl font-bold text-foreground">TaskHub</h1>
+              <p className="text-sm text-muted-foreground">Earn Money Online</p>
             </div>
           </div>
           
           <nav className="hidden md:flex items-center space-x-6">
-            <a href="#dashboard" className="text-foreground hover:text-primary font-medium transition-smooth">
-              Dashboard
+            <a href="#tasks" className="text-foreground hover:text-primary font-medium transition-smooth">
+              Available Tasks
             </a>
-            <a href="#surveys" className="text-foreground hover:text-primary font-medium transition-smooth">
-              Surveys
+            <a href="#earnings" className="text-foreground hover:text-primary font-medium transition-smooth">
+              My Earnings
             </a>
-            <a href="#analytics" className="text-foreground hover:text-primary font-medium transition-smooth">
-              Analytics
+            <a href="#history" className="text-foreground hover:text-primary font-medium transition-smooth">
+              Task History
             </a>
-            <a href="#reports" className="text-foreground hover:text-primary font-medium transition-smooth">
-              Reports
+            <a href="#rewards" className="text-foreground hover:text-primary font-medium transition-smooth">
+              Rewards
             </a>
           </nav>
 
           <div className="flex items-center space-x-3">
             <Button variant="ghost" size="sm" className="hidden md:flex">
-              Sign In
+              Login
             </Button>
             <Button variant="hero" size="sm">
-              Start Free Trial
+              Start Earning
             </Button>
             <Button variant="ghost" size="icon" className="md:hidden">
               <Menu className="h-5 w-5" />

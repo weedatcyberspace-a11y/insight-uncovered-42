@@ -16,47 +16,47 @@ const HeroSection = () => {
             <div className="space-y-4">
               <div className="inline-block">
                 <span className="bg-gradient-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-semibold shadow-soft">
-                  #1 Survey Platform for Businesses
+                  Earn Up to $50/Day with Simple Tasks
                 </span>
               </div>
               
               <h1 className="text-5xl lg:text-6xl font-bold text-foreground leading-tight">
-                Turn Customer
-                <span className="bg-gradient-hero bg-clip-text text-transparent"> Insights</span>
+                Complete Tasks,
+                <span className="bg-gradient-hero bg-clip-text text-transparent"> Earn Money</span>
                 <br />
-                Into Business Growth
+                Get Paid Daily
               </h1>
               
               <p className="text-xl text-muted-foreground leading-relaxed max-w-lg">
-                Create professional surveys, collect valuable data, and make data-driven decisions that grow your business. Trusted by 10,000+ companies worldwide.
+                Join thousands earning real money by completing surveys, watching videos, testing apps, and more. Start earning today with instant payments to your account.
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Button variant="hero" size="xl" className="group">
-                Start Creating Surveys
+                Start Earning Now
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
               
               <Button variant="outline" size="xl" className="group">
                 <Play className="mr-2 h-5 w-5" />
-                Watch Demo
+                See How It Works
               </Button>
             </div>
 
             {/* Stats */}
             <div className="grid grid-cols-3 gap-8 pt-8 border-t border-border">
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary">10K+</div>
-                <div className="text-sm text-muted-foreground">Active Companies</div>
+                <div className="text-3xl font-bold text-primary">$2.5M+</div>
+                <div className="text-sm text-muted-foreground">Total Paid Out</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-accent">2M+</div>
-                <div className="text-sm text-muted-foreground">Surveys Created</div>
+                <div className="text-3xl font-bold text-accent">150K+</div>
+                <div className="text-sm text-muted-foreground">Active Earners</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary">98%</div>
-                <div className="text-sm text-muted-foreground">Satisfaction Rate</div>
+                <div className="text-3xl font-bold text-primary">4.8★</div>
+                <div className="text-sm text-muted-foreground">User Rating</div>
               </div>
             </div>
           </div>
@@ -79,8 +79,8 @@ const HeroSection = () => {
                   <Users className="h-4 w-4 text-accent-foreground" />
                 </div>
                 <div>
-                  <div className="text-sm font-semibold">Response Rate</div>
-                  <div className="text-lg font-bold text-accent">+127%</div>
+                  <div className="text-sm font-semibold">Daily Earnings</div>
+                  <div className="text-lg font-bold text-accent">$47.50</div>
                 </div>
               </div>
             </Card>
@@ -91,8 +91,8 @@ const HeroSection = () => {
                   <BarChart3 className="h-4 w-4 text-primary-foreground" />
                 </div>
                 <div>
-                  <div className="text-sm font-semibold">Data Quality</div>
-                  <div className="text-lg font-bold text-primary">96.8%</div>
+                  <div className="text-sm font-semibold">Tasks Completed</div>
+                  <div className="text-lg font-bold text-primary">142</div>
                 </div>
               </div>
             </Card>

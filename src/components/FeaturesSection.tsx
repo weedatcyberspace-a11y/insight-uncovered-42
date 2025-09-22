@@ -14,38 +14,38 @@ import {
 const features = [
   {
     icon: Zap,
-    title: "Lightning Fast Setup",
-    description: "Create professional surveys in minutes with our intuitive drag-and-drop builder.",
+    title: "Quick Tasks",
+    description: "Complete simple surveys, polls, and questionnaires in just 2-5 minutes each.",
     gradient: "gradient-primary"
   },
   {
     icon: BarChart3,
-    title: "Advanced Analytics",
-    description: "Get real-time insights with powerful charts, graphs, and statistical analysis.",
+    title: "Video Watching",
+    description: "Watch short videos and ads to earn money. Each video pays between $0.10-$0.50.",
     gradient: "gradient-accent"
   },
   {
     icon: Users,
-    title: "Audience Management",
-    description: "Target the right respondents with advanced demographic and behavioral filters.",
+    title: "App Testing",
+    description: "Test new apps and websites, provide feedback and earn $2-$10 per test.",
     gradient: "gradient-primary"
   },
   {
     icon: Shield,
-    title: "Enterprise Security",
-    description: "Bank-level encryption and GDPR compliance to protect your valuable data.",
+    title: "Secure Payments",
+    description: "Get paid instantly via PayPal, bank transfer, or gift cards. Minimum payout $5.",
     gradient: "gradient-accent"
   },
   {
     icon: Globe,
-    title: "Global Distribution",
-    description: "Reach audiences worldwide with multi-language support and localization.",
+    title: "Global Tasks",
+    description: "Access tasks from companies worldwide. Available 24/7 with new tasks daily.",
     gradient: "gradient-primary"
   },
   {
     icon: Target,
-    title: "Smart Targeting",
-    description: "AI-powered targeting ensures you get quality responses from your ideal audience.",
+    title: "Smart Matching",
+    description: "AI matches you with high-paying tasks based on your profile and interests.",
     gradient: "gradient-accent"
   }
 ];
@@ -53,21 +53,21 @@ const features = [
 const stats = [
   {
     icon: TrendingUp,
-    label: "Higher Response Rates",
-    value: "3x",
-    description: "Compared to traditional methods"
+    label: "Average Daily Earnings",
+    value: "$25",
+    description: "Active users earn daily"
   },
   {
     icon: Clock,
-    label: "Faster Data Collection",
-    value: "75%",
-    description: "Reduce time to insights"
+    label: "Tasks Available",
+    value: "500+",
+    description: "New tasks added daily"
   },
   {
     icon: CheckCircle,
-    label: "Data Accuracy",
-    value: "99.2%",
-    description: "Clean, validated responses"
+    label: "Payment Success Rate",
+    value: "99.9%",
+    description: "On-time payments guaranteed"
   }
 ];
 
@@ -78,12 +78,12 @@ const FeaturesSection = () => {
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-4">
-            Everything You Need for
-            <span className="bg-gradient-hero bg-clip-text text-transparent"> Market Research</span>
+            Multiple Ways to
+            <span className="bg-gradient-hero bg-clip-text text-transparent"> Earn Money</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            From survey creation to data analysis, our comprehensive platform provides all the tools 
-            you need to gather insights and make informed business decisions.
+            Choose from various task types that fit your schedule. From quick 2-minute surveys 
+            to longer app testing sessions - there's always a way to earn.
           </p>
         </div>
 

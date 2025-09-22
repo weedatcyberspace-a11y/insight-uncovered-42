@@ -1,7 +1,7 @@
 import SurveyHeader from "@/components/SurveyHeader";
 import HeroSection from "@/components/HeroSection";
 import FeaturesSection from "@/components/FeaturesSection";
-import SurveyDashboard from "@/components/SurveyDashboard";
+import TaskDashboard from "@/components/TaskDashboard";
 
 const Index = () => {
   return (
@@ -10,7 +10,7 @@ const Index = () => {
       <main>
         <HeroSection />
         <FeaturesSection />
-        <SurveyDashboard />
+        <TaskDashboard />
       </main>
     </div>
   );
