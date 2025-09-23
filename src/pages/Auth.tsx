@@ -11,18 +11,23 @@ import { useNavigate } from "react-router-dom";
 const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [signinEmail, setSigninEmail] = useState("");
+  const [signinPassword, setSigninPassword] = useState("");
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupPassword, setSignupPassword] = useState("");
+  const [signupPhone, setSignupPhone] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSignUp = async () => {
+    // called from onClick; no form event to prevent
     setLoading(true);
 
     try {
-      const formData = new FormData(e.currentTarget);
-      const email = (formData.get("email") || "") as string;
-      const password = (formData.get("password") || "") as string;
-      const phone = (formData.get("phone") || "") as string;
+  // values come from controlled inputs
+  const email = signupEmail;
+  const password = signupPassword;
+  const phone = signupPhone;
 
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -47,16 +52,15 @@ const Auth = () => {
     }
   };
 
-  const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSignIn = async () => {
+    // called from onClick; no form event to prevent
     setLoading(true);
 
     try {
-      const formData = new FormData(e.currentTarget);
-      const email = (formData.get("email") || "") as string;
-      const password = (formData.get("password") || "") as string;
+  const email = signinEmail;
+  const password = signinPassword;
 
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
       if (error) throw error;
 
@@ -115,7 +119,7 @@ const Auth = () => {
             </TabsList>
             
             <TabsContent value="signin" className="space-y-4">
-              <form onSubmit={handleSignIn} className="space-y-4">
+              <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="signin-email">Email</Label>
                   <Input
@@ -124,6 +128,8 @@ const Auth = () => {
                     type="email"
                     placeholder="Enter your email"
                     required
+                    value={signinEmail}
+                    onChange={(e) => setSigninEmail(e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
@@ -135,6 +141,8 @@ const Auth = () => {
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
                       required
+                      value={signinPassword}
+                      onChange={(e) => setSigninPassword(e.target.value)}
                     />
                     <Button
                       type="button"
@@ -147,10 +155,10 @@ const Auth = () => {
                     </Button>
                   </div>
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button type="button" className="w-full" disabled={loading} onClick={handleSignIn}>
                   {loading ? "Signing in..." : "Sign In"}
                 </Button>
-              </form>
+              </div>
               
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
@@ -177,7 +185,7 @@ const Auth = () => {
             </TabsContent>
             
             <TabsContent value="signup" className="space-y-4">
-              <form onSubmit={handleSignUp} className="space-y-4">
+              <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="signup-email">Email</Label>
                   <Input
@@ -186,6 +194,8 @@ const Auth = () => {
                     type="email"
                     placeholder="Enter your email"
                     required
+                    value={signupEmail}
+                    onChange={(e) => setSignupEmail(e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
@@ -195,6 +205,8 @@ const Auth = () => {
                     name="phone"
                     type="tel"
                     placeholder="Enter your phone number (optional)"
+                    value={signupPhone}
+                    onChange={(e) => setSignupPhone(e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
@@ -207,6 +219,8 @@ const Auth = () => {
                       placeholder="Create a password"
                       required
                       minLength={6}
+                      value={signupPassword}
+                      onChange={(e) => setSignupPassword(e.target.value)}
                     />
                     <Button
                       type="button"
@@ -219,10 +233,10 @@ const Auth = () => {
                     </Button>
                   </div>
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button type="button" className="w-full" disabled={loading} onClick={handleSignUp}>
                   {loading ? "Creating account..." : "Sign Up"}
                 </Button>
-              </form>
+              </div>
               
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">

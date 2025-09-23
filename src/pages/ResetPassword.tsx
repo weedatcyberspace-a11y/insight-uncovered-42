@@ -13,8 +13,7 @@ const ResetPassword = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (!email) {
       toast({ title: "Email required", description: "Please enter your email.", variant: "destructive" });
       return;
@@ -41,14 +40,14 @@ const ResetPassword = () => {
           <CardDescription>Enter your email to receive password reset instructions.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="reset-email">Email</Label>
               <Input id="reset-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required />
             </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>{loading ? 'Sending...' : 'Send reset link'}</Button>
-          </form>
+            <Button type="button" className="w-full" disabled={loading} onClick={handleSubmit}>{loading ? 'Sending...' : 'Send reset link'}</Button>
+          </div>
         </CardContent>
       </Card>
     </div>
