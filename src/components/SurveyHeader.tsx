@@ -1,7 +1,32 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Users, TrendingUp, Menu } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { BarChart3, Users, TrendingUp, Menu, User, LogOut } from "lucide-react";
 
 const SurveyHeader = () => {
+  const [user, setUser] = useState<any>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate("/");
+  };
   return (
     <header className="bg-card/80 backdrop-blur-lg border-b border-border sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
@@ -31,16 +56,42 @@ const SurveyHeader = () => {
             </a>
           </nav>
 
-          <div className="flex items-center space-x-3">
-            <Button variant="ghost" size="sm" className="hidden md:flex">
-              Login
-            </Button>
-            <Button variant="hero" size="sm">
-              Start Earning
-            </Button>
-            <Button variant="ghost" size="icon" className="md:hidden">
-              <Menu className="h-5 w-5" />
-            </Button>
+          <div className="flex items-center space-x-4">
+            {user ? (
+              <div className="flex items-center space-x-3">
+                <Badge variant="secondary" className="hidden sm:flex">
+                  {user.email}
+                </Badge>
+                <Button 
+                  onClick={() => navigate("/profile")} 
+                  variant="outline" 
+                  size="sm"
+                >
+                  <User className="w-4 h-4 mr-2" />
+                  Profile
+                </Button>
+                <Button onClick={handleSignOut} variant="outline" size="sm">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <>
+                <Button 
+                  onClick={() => navigate("/auth")} 
+                  variant="outline" 
+                  size="sm"
+                >
+                  Sign In
+                </Button>
+                <Button 
+                  onClick={() => navigate("/auth")} 
+                  size="sm"
+                >
+                  Get Started
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
