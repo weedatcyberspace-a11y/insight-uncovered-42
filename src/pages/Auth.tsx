@@ -37,9 +37,9 @@ const Auth = () => {
 
       if (error) throw error;
 
-      // Require email confirmation for email/password sign-ups.
-      // Even if a session is returned in some environments, instruct the user to confirm their email first.
-      toast({ title: "Success!", description: "Check your email to verify your account before signing in.", });
+      // Successful sign up: notify and navigate to dashboard
+      toast({ title: "Success!", description: "Account created — redirecting to your dashboard.", });
+      navigate("/");
     } catch (err: any) {
       toast({ title: "Sign up failed", description: err?.message || String(err), variant: "destructive", });
     } finally {
@@ -108,7 +108,7 @@ const Auth = () => {
           <CardDescription>Start earning money by completing tasks</CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="signin" className="space-y-4">
+          <Tabs defaultValue="signup" className="space-y-4">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">Sign In</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
