@@ -85,6 +85,29 @@ const quickStats = [
 
 const TaskDashboard = () => {
   const [tasks, setTasks] = useState<TaskWithCompletion[]>([]);
+  // Add a sample quick video task for demonstration if not present
+  useEffect(() => {
+    if (!tasks.some(t => t.task_type === 'video' && t.title === 'Watch a Short Video')) {
+      setTasks(prev => [
+        {
+          id: 'quick-video-1',
+          title: 'Watch a Short Video',
+          description: 'Watch a 30-second video and earn instantly.',
+          task_type: 'video',
+          payout_amount: 0.50,
+          total_slots: 100,
+          completed_slots: 0,
+          expires_at: null,
+          status: 'active',
+          affiliate_link: null,
+          content_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+          client_name: 'QuickTask',
+          user_task: undefined,
+        },
+        ...prev
+      ]);
+    }
+  }, [tasks]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [selectedTask, setSelectedTask] = useState<TaskWithCompletion | null>(null);
@@ -290,7 +313,7 @@ const TaskDashboard = () => {
   }
 
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-background to-muted/50">
+  <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-background to-muted/50">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
@@ -326,18 +349,24 @@ const TaskDashboard = () => {
             const isCompleted = task.user_task?.status === 'completed';
             const isInProgress = task.user_task?.status === 'in_progress';
             const slotsRemaining = task.total_slots - task.completed_slots;
-            
+            // Highlight quick video task
+            const isQuickVideo = task.id === 'quick-video-1';
             return (
-              <Card key={task.id} className={`group hover:shadow-lg transition-all duration-300 border-l-4 border-l-primary ${isCompleted ? 'bg-green-50' : ''}`}>
+              <Card key={task.id} className={`group hover:shadow-lg transition-all duration-300 border-l-4 border-l-primary ${isCompleted ? 'bg-green-50' : ''} ${isQuickVideo ? 'ring-2 ring-yellow-400' : ''}`}>
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
-                    <div className={`p-2 rounded-full ${colors.bg}`}>
+                    <div className={`p-2 rounded-full ${colors.bg}`}> 
                       <Icon className={`w-5 h-5 ${colors.text}`} />
                     </div>
                     <div className="flex flex-col items-end space-y-1">
                       <Badge variant="secondary" className="text-xs">
                         {task.task_type}
                       </Badge>
+                      {isQuickVideo && (
+                        <Badge variant="default" className="text-xs bg-yellow-400 text-black">
+                          Quick Task
+                        </Badge>
+                      )}
                       {isCompleted && (
                         <Badge variant="default" className="text-xs bg-green-600">
                           <CheckCircle className="w-3 h-3 mr-1" />
@@ -382,7 +411,6 @@ const TaskDashboard = () => {
                         <span className="text-xs">{task.client_name}</span>
                       </div>
                     )}
-                    
                     <Button 
                       onClick={() => handleStartTask(task)}
                       className="w-full mt-4 group-hover:bg-primary/90 transition-colors"
@@ -399,7 +427,7 @@ const TaskDashboard = () => {
                       ) : slotsRemaining <= 0 ? (
                         'Task Full'
                       ) : (
-                        'Start Task'
+                        isQuickVideo ? 'Start Quick Task' : 'Start Task'
                       )}
                     </Button>
                   </div>

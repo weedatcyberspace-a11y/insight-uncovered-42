@@ -27,6 +27,8 @@ interface TaskStats {
 
 const Profile = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [withdrawAmount, setWithdrawAmount] = useState<number>(0);
+  const [withdrawing, setWithdrawing] = useState(false);
   const [taskStats, setTaskStats] = useState<TaskStats>({ total_completed: 0, pending_tasks: 0, total_earned: 0 });
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -88,9 +90,41 @@ const Profile = () => {
   };
 
   const handleWithdraw = () => {
-    const message = `Hi! I would like to withdraw $${profile?.available_balance} from my TaskHub account. My account ID is: ${profile?.id}`;
-    const whatsappUrl = `https://wa.me/254114470612?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    if (!withdrawAmount || withdrawAmount <= 0 || !profile || withdrawAmount > profile.available_balance) {
+      toast({
+        title: "Invalid withdrawal amount",
+        description: "Please enter a valid amount to withdraw.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setWithdrawing(true);
+    // Deduct amount from balance in Supabase
+    supabase
+      .from("profiles")
+      .update({ available_balance: profile.available_balance - withdrawAmount })
+      .eq("user_id", profile.user_id)
+      .then(({ error }) => {
+        if (error) {
+          toast({
+            title: "Withdrawal failed",
+            description: error.message,
+            variant: "destructive",
+          });
+          setWithdrawing(false);
+        } else {
+          setProfile({ ...profile, available_balance: profile.available_balance - withdrawAmount });
+          const message = `Hi! I would like to withdraw $${withdrawAmount.toFixed(2)} from my TaskHub account. My account ID is: ${profile.id}`;
+          const whatsappUrl = `https://wa.me/254114470612?text=${encodeURIComponent(message)}`;
+          window.open(whatsappUrl, '_blank');
+          toast({
+            title: "Withdrawal initiated",
+            description: `You requested $${withdrawAmount.toFixed(2)}. Your new balance is $${(profile.available_balance - withdrawAmount).toFixed(2)}.`,
+          });
+          setWithdrawAmount(0);
+          setWithdrawing(false);
+        }
+      });
   };
 
   const handleSignOut = async () => {
@@ -175,21 +209,34 @@ const Profile = () => {
                   </Badge>
                 </div>
                 <Separator />
-                <div className="flex items-center justify-between">
-                  <div>
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div className="w-full md:w-auto">
                     <p className="text-lg font-semibold">
                       ${profile.total_earnings?.toFixed(2) || '0.00'}
                     </p>
                     <p className="text-sm text-muted-foreground">Total earnings</p>
                   </div>
-                  <Button 
-                    onClick={handleWithdraw} 
-                    className="bg-green-600 hover:bg-green-700"
-                    disabled={!profile.available_balance || profile.available_balance <= 0}
-                  >
-                    <MessageCircle className="h-4 w-4 mr-2" />
-                    Withdraw via WhatsApp
-                  </Button>
+                  <div className="flex flex-col md:flex-row items-center gap-2 w-full md:w-auto">
+                    <input
+                      type="number"
+                      min={1}
+                      max={profile.available_balance}
+                      step={0.01}
+                      value={withdrawAmount}
+                      onChange={e => setWithdrawAmount(Number(e.target.value))}
+                      placeholder="Amount to withdraw"
+                      className="border rounded px-3 py-2 w-full md:w-32"
+                      disabled={withdrawing}
+                    />
+                    <Button 
+                      onClick={handleWithdraw} 
+                      className="bg-green-600 hover:bg-green-700"
+                      disabled={withdrawing || !profile.available_balance || profile.available_balance <= 0 || !withdrawAmount || withdrawAmount > profile.available_balance}
+                    >
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      {withdrawing ? 'Processing...' : 'Withdraw via WhatsApp'}
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardContent>
