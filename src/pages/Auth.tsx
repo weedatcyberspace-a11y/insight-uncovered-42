@@ -37,13 +37,9 @@ const Auth = () => {
 
       if (error) throw error;
 
-      // If signUp returns a session (e.g., when using OAuth or auto-confirm), navigate
-      if (data?.session) {
-        toast({ title: "Signed up", description: "Welcome!", });
-        navigate("/");
-      } else {
-        toast({ title: "Success!", description: "Check your email to verify your account.", });
-      }
+      // Require email confirmation for email/password sign-ups.
+      // Even if a session is returned in some environments, instruct the user to confirm their email first.
+      toast({ title: "Success!", description: "Check your email to verify your account before signing in.", });
     } catch (err: any) {
       toast({ title: "Sign up failed", description: err?.message || String(err), variant: "destructive", });
     } finally {
