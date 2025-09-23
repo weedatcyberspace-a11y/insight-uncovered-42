@@ -19,79 +19,88 @@ const Auth = () => {
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-    const phone = formData.get("phone") as string;
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/`,
-        data: {
-          phone_number: phone
-        }
+    try {
+      const formData = new FormData(e.currentTarget);
+      const email = (formData.get("email") || "") as string;
+      const password = (formData.get("password") || "") as string;
+      const phone = (formData.get("phone") || "") as string;
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            phone_number: phone,
+          },
+        },
+      });
+
+      if (error) throw error;
+
+      // If signUp returns a session (e.g., when using OAuth or auto-confirm), navigate
+      if (data?.session) {
+        toast({ title: "Signed up", description: "Welcome!", });
+        navigate("/");
+      } else {
+        toast({ title: "Success!", description: "Check your email to verify your account.", });
       }
-    });
-
-    setLoading(false);
-
-    if (error) {
-      toast({
-        title: "Sign up failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Success!",
-        description: "Check your email to verify your account.",
-      });
+    } catch (err: any) {
+      toast({ title: "Sign up failed", description: err?.message || String(err), variant: "destructive", });
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const formData = new FormData(e.currentTarget);
+      const email = (formData.get("email") || "") as string;
+      const password = (formData.get("password") || "") as string;
 
-    setLoading(false);
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (error) {
-      toast({
-        title: "Sign in failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    } else {
-      navigate("/");
+      if (error) throw error;
+
+      // Only navigate when a session exists
+      if (data?.session) {
+        navigate("/");
+      } else {
+        // Some setups require email confirmation; inform the user
+        toast({ title: "Signed in", description: "Sign in successful.", });
+        // Optionally navigate if you want to proceed anyway
+        navigate("/");
+      }
+    } catch (err: any) {
+      toast({ title: "Sign in failed", description: err?.message || String(err), variant: "destructive", });
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/`
-      }
-    });
+    setLoading(true);
 
-    if (error) {
-      toast({
-        title: "Google sign in failed",
-        description: error.message,
-        variant: "destructive",
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: `${window.location.origin}/` },
       });
+
+      if (error) throw error;
+
+      // For OAuth, Supabase redirects the browser - if data contains url, navigate
+      if ((data as any)?.url) {
+        window.location.href = (data as any).url;
+      }
+    } catch (err: any) {
+      toast({ title: "Google sign in failed", description: err?.message || String(err), variant: "destructive", });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -104,22 +113,16 @@ const Auth = () => {
       });
       return;
     }
+    setLoading(true);
 
-    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-      redirectTo: `${window.location.origin}/`,
-    });
-
-    if (error) {
-      toast({
-        title: "Password reset failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Password reset sent",
-        description: "Check your email for password reset instructions.",
-      });
+    try {
+      const { data, error } = await supabase.auth.resetPasswordForEmail(resetEmail, { redirectTo: `${window.location.origin}/` });
+      if (error) throw error;
+      toast({ title: "Password reset sent", description: "Check your email for password reset instructions.", });
+    } catch (err: any) {
+      toast({ title: "Password reset failed", description: err?.message || String(err), variant: "destructive", });
+    } finally {
+      setLoading(false);
     }
   };
 
