@@ -7,12 +7,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
 
 const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [resetEmail, setResetEmail] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -104,27 +102,7 @@ const Auth = () => {
     }
   };
 
-  const handlePasswordReset = async () => {
-    if (!resetEmail) {
-      toast({
-        title: "Email required",
-        description: "Please enter your email address.",
-        variant: "destructive",
-      });
-      return;
-    }
-    setLoading(true);
-
-    try {
-      const { data, error } = await supabase.auth.resetPasswordForEmail(resetEmail, { redirectTo: `${window.location.origin}/` });
-      if (error) throw error;
-      toast({ title: "Password reset sent", description: "Check your email for password reset instructions.", });
-    } catch (err: any) {
-      toast({ title: "Password reset failed", description: err?.message || String(err), variant: "destructive", });
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Password reset is handled on a dedicated page at /reset-password
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-secondary/20 flex items-center justify-center p-4">
@@ -169,7 +147,7 @@ const Auth = () => {
                       className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                       onClick={() => setShowPassword(!showPassword)}
                     >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showPassword ? 'Hide' : 'Show'}
                     </Button>
                   </div>
                 </div>
@@ -191,20 +169,14 @@ const Auth = () => {
                 Continue with Google
               </Button>
               
-              <div className="space-y-2">
-                <Label htmlFor="reset-email">Forgot Password?</Label>
-                <div className="flex space-x-2">
-                  <Input
-                    id="reset-email"
-                    type="email"
-                    placeholder="Enter your email"
-                    value={resetEmail}
-                    onChange={(e) => setResetEmail(e.target.value)}
-                  />
-                  <Button onClick={handlePasswordReset} variant="outline">
-                    Reset
-                  </Button>
-                </div>
+              <div className="text-sm text-center">
+                <button
+                  type="button"
+                  className="text-primary underline"
+                  onClick={() => navigate('/reset-password')}
+                >
+                  Forgot your password?
+                </button>
               </div>
             </TabsContent>
             
@@ -221,13 +193,12 @@ const Auth = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-phone">Phone Number</Label>
+                  <Label htmlFor="signup-phone">Phone Number (optional)</Label>
                   <Input
                     id="signup-phone"
                     name="phone"
                     type="tel"
-                    placeholder="Enter your phone number"
-                    required
+                    placeholder="Enter your phone number (optional)"
                   />
                 </div>
                 <div className="space-y-2">
@@ -248,7 +219,7 @@ const Auth = () => {
                       className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                       onClick={() => setShowPassword(!showPassword)}
                     >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showPassword ? 'Hide' : 'Show'}
                     </Button>
                   </div>
                 </div>
