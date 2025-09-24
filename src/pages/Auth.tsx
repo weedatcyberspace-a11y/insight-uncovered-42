@@ -82,6 +82,23 @@ const Auth = () => {
     setLoading(true);
 
     try {
+      // Check if user already exists
+      const { data: existingUser } = await supabase
+        .from('profiles')
+        .select('user_id')
+        .eq('phone_number', formData.phoneNumber)
+        .maybeSingle();
+
+      if (existingUser) {
+        toast({ 
+          title: "Phone number already registered", 
+          description: "Please use a different phone number or sign in.", 
+          variant: "destructive" 
+        });
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -94,9 +111,22 @@ const Auth = () => {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        // Handle case where user already exists
+        if (error.message.includes('already registered')) {
+          toast({ 
+            title: "Email already registered", 
+            description: "Please sign in instead or use a different email.", 
+            variant: "destructive" 
+          });
+          setIsSignUp(false);
+          setLoading(false);
+          return;
+        }
+        throw error;
+      }
 
-      // Create profile
+      // Create profile immediately - no email confirmation needed
       if (data.user) {
         const { error: profileError } = await supabase
           .from("profiles")
@@ -111,13 +141,22 @@ const Auth = () => {
         if (profileError) {
           console.error("Profile creation error:", profileError);
         }
-      }
 
-      toast({ 
-        title: "Account created successfully", 
-        description: "Please check your email to verify your account." 
-      });
-      setIsSignUp(false);
+        // Auto sign in the user if account was created successfully
+        if (data.session) {
+          toast({ 
+            title: "Account created successfully! 🎉", 
+            description: "Welcome to TaskHub! Start answering questions to earn money." 
+          });
+          navigate("/");
+        } else {
+          toast({ 
+            title: "Account created successfully!", 
+            description: "You can now sign in and start earning money." 
+          });
+          setIsSignUp(false);
+        }
+      }
     } catch (err: any) {
       toast({ 
         title: "Sign up failed", 

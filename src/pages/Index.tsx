@@ -14,13 +14,55 @@ const Index = () => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
+      
+      // Create profile for new users (especially Google OAuth users)
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("user_id")
+          .eq("user_id", session.user.id)
+          .maybeSingle();
+          
+        if (!profile) {
+          await supabase
+            .from("profiles")
+            .insert({
+              user_id: session.user.id,
+              phone_number: session.user.user_metadata?.phone_number || null,
+              available_balance: 0,
+              total_earnings: 0,
+              account_status: 'active'
+            });
+        }
+      }
     };
 
     checkAuth();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user ?? null);
+      
+      // Create profile for new users on sign in
+      if (event === 'SIGNED_IN' && session?.user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("user_id")
+          .eq("user_id", session.user.id)
+          .maybeSingle();
+          
+        if (!profile) {
+          await supabase
+            .from("profiles")
+            .insert({
+              user_id: session.user.id,
+              phone_number: session.user.user_metadata?.phone_number || null,
+              available_balance: 0,
+              total_earnings: 0,
+              account_status: 'active'
+            });
+        }
+      }
     });
 
     return () => subscription.unsubscribe();
