@@ -89,7 +89,7 @@ const Profile = () => {
     }
   };
 
-  const handleWithdraw = () => {
+  const handleWithdraw = async () => {
     if (!withdrawAmount || withdrawAmount <= 0 || !profile || withdrawAmount > profile.available_balance) {
       toast({
         title: "Invalid withdrawal amount",
@@ -98,33 +98,84 @@ const Profile = () => {
       });
       return;
     }
-    setWithdrawing(true);
-    // Deduct amount from balance in Supabase
-    supabase
-      .from("profiles")
-      .update({ available_balance: profile.available_balance - withdrawAmount })
-      .eq("user_id", profile.user_id)
-      .then(({ error }) => {
-        if (error) {
-          toast({
-            title: "Withdrawal failed",
-            description: error.message,
-            variant: "destructive",
-          });
-          setWithdrawing(false);
-        } else {
-          setProfile({ ...profile, available_balance: profile.available_balance - withdrawAmount });
-          const message = `Hi! I would like to withdraw $${withdrawAmount.toFixed(2)} from my TaskHub account. My account ID is: ${profile.id}`;
-          const whatsappUrl = `https://wa.me/254114470612?text=${encodeURIComponent(message)}`;
-          window.open(whatsappUrl, '_blank');
-          toast({
-            title: "Withdrawal initiated",
-            description: `You requested $${withdrawAmount.toFixed(2)}. Your new balance is $${(profile.available_balance - withdrawAmount).toFixed(2)}.`,
-          });
-          setWithdrawAmount(0);
-          setWithdrawing(false);
-        }
+
+    // Check minimum withdrawal amount
+    if (withdrawAmount < 1.00) {
+      toast({
+        title: "Minimum withdrawal amount",
+        description: "Minimum withdrawal amount is $1.00",
+        variant: "destructive",
       });
+      return;
+    }
+
+    setWithdrawing(true);
+    
+    try {
+      // Get user details first
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      // Deduct amount from balance in Supabase
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ available_balance: profile.available_balance - withdrawAmount })
+        .eq("user_id", profile.user_id);
+
+      if (updateError) throw updateError;
+
+      // Log the withdrawal transaction
+      const { error: transactionError } = await supabase
+        .from("transactions")
+        .insert({
+          user_id: user.id,
+          amount: withdrawAmount,
+          transaction_type: 'withdrawal',
+          description: `Withdrawal request via WhatsApp`,
+          status: 'pending',
+          phone_number: profile.phone_number,
+          payment_method: 'whatsapp'
+        });
+
+      if (transactionError) {
+        console.error("Transaction log error:", transactionError);
+      }
+
+      // Update local state
+      setProfile({ ...profile, available_balance: profile.available_balance - withdrawAmount });
+      
+      // Create detailed WhatsApp message with user information
+      const message = `WITHDRAWAL REQUEST
+━━━━━━━━━━━━━━━━━━━━━
+💰 Amount: $${withdrawAmount.toFixed(2)}
+👤 User ID: ${profile.id}
+📧 Email: ${user.email || 'Not provided'}
+📱 Phone: ${profile.phone_number || 'Not provided'}
+🆔 Account: ${profile.user_id.substring(0, 8)}...
+━━━━━━━━━━━━━━━━━━━━━
+Please process this withdrawal request. Thank you!`;
+
+      const whatsappUrl = `https://wa.me/254114470612?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+      
+      toast({
+        title: "Withdrawal Successful! ✅",
+        description: `$${withdrawAmount.toFixed(2)} deducted. New balance: $${(profile.available_balance - withdrawAmount).toFixed(2)}. WhatsApp opened for processing.`,
+      });
+      
+      setWithdrawAmount(0);
+    } catch (error: any) {
+      toast({
+        title: "Withdrawal failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setWithdrawing(false);
+    }
   };
 
   const handleSignOut = async () => {
